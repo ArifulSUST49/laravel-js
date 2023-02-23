@@ -62,8 +62,8 @@ class VariantController extends Controller
      */
     public function edit($id)
     {
-        $product_variant = Variant::findOrFail($id);
-        return view('products.variant.edit', compact('product_variant'));
+        $variant = Variant::findOrFail($id);
+        return view('products.edit', compact('variant'));
     }
 
     /**

@@ -143,11 +143,21 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $edit = Product::findOrFail($id);
-        return view('products.edit', compact('edit'));
-
-        // $product_variant = Variant::findOrFail($id);
-        // return view('products.variant.edit', compact('product_variant'));
+        $product = Product::with(
+            'productVariantPrice',
+            'productVariantPrice.productVariantOne.newVariant',
+            'productVariantPrice.productVariantTwo.newVariant',
+            'productVariantPrice.productVariantThree.newVariant',
+        )->findOrFail($id);
+        $variants = Variant::with('productVariant')->get();
+        foreach($variants as $varient)
+        {
+            $varItems = $varient->productVariant->pluck('variant', 'id')->toArray();
+            $varient->pvariants = array_unique(array_map('strtoupper', $varItems));
+            unset($varient->productVariant);
+        }
+        $variants = $variants->toArray();
+        return view('products.edit', compact('variants', 'product'));
     }
 
     /**
@@ -157,9 +167,24 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        //
+        $product = Product::with('productVariantPrice')->findOrFail($id);
+
+        $product->title = $request->product_name;
+        $product->sku = $request->product_sku;
+        $product->description = $request->product_description;
+        $product->save();
+
+        $variations = $request->variant;
+        $product->productVariantPrice[0]->product_variant_one = $variations[0]['items'];
+        $product->productVariantPrice[0]->product_variant_two = $variations[1]['items'];
+        $product->productVariantPrice[0]->product_variant_three = $variations[2]['items'];
+        $product->productVariantPrice[0]->price = $request->price;
+        $product->productVariantPrice[0]->stock = $request->stock;
+        $product->productVariantPrice[0]->save();
+
+        return redirect()->back()->with('msg', 'Product Updated');
     }
 
     /**

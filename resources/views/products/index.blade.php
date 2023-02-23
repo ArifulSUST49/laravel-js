@@ -20,7 +20,7 @@
                         </div>
                         <div class="col-md-2">
                             <select name="variant" id="" class="form-control">
-                                <option value="-Select A Varient-">-Select A Varient-</option>
+                                <option value="">-Select A Varient-</option>
                                 @foreach($getVerients as $variant)
                                     <optgroup label="{{ $variant['title'] }}">
                                         @foreach($variant['pvariants'] as $pv)
@@ -89,7 +89,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('product.edit',$data->id ) }}" class="btn btn-success">Edit</a>
+                                            <a href="{{ route('product.edit', $data->id) }}" class="btn btn-success">Edit</a>
                                         </div>
                                     </td>
                                 </tr>
