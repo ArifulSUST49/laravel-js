@@ -58,7 +58,7 @@
                                     class="m-0 font-weight-bold text-primary">Media</h6></div>
                             <div class="card-body border">
                                 <div id="file-upload" class="dropzone dz-clickable">
-                                   <input type="file" id="input-file-now" class="file-upload" />
+                                <input type="file" id="image" name ="image"  class="file-upload" aria-describedby="helpId" />
                                       
                                 </div>
                             </div>

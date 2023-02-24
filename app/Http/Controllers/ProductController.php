@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
 use App\Models\Variant;
@@ -86,6 +87,7 @@ class ProductController extends Controller
             unset($varient->productVariant);
         }
         $variants = $variants->toArray();
+      
         return view('products.create', compact('variants'));
     }
 
@@ -102,8 +104,13 @@ class ProductController extends Controller
             'sku'   => $request->product_sku,
             'description' => $request->product_description,
         ];
+       
 
         $product = Product::create($data);
+
+       
+
+
         if ($product)
         {
             $variations = $request->variant;
@@ -113,13 +120,36 @@ class ProductController extends Controller
                 'product_variant_three' => $variations[2]['items'],
                 'price' => $request->price,
                 'stock' => $request->stock,
-                'product_id' => $product->id
+                'product_id' => $product->id,
             ];
 
             ProductVariantPrice::create($varData);
         }
 
+
+        $input = $request->all();
+        if($file =$request->file('image'))
+        {
+            $name = $file->getClientOriginalName();
+
+           $destination_path = 'public/builds/assets/'.$name;
+           if($file->move($destination_path, $name))
+           {
+             
+              $product_image = new ProductImage();
+              $product_image->product_id = $product->id;
+              $product_image->file_path = $request->destination_path;
+           
+              $product_image->save();
+
+           };
+           ProductImage::create($product_image);
+       
+        }
+       
         return redirect()->back()->with('msg', 'Data successful Added');
+       
+
 
     }
 
@@ -131,7 +161,7 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($product)
-    {
+    {  
 
     }
 
@@ -157,6 +187,7 @@ class ProductController extends Controller
             unset($varient->productVariant);
         }
         $variants = $variants->toArray();
+       
         return view('products.edit', compact('variants', 'product'));
     }
 
@@ -171,10 +202,15 @@ class ProductController extends Controller
     {
         $product = Product::with('productVariantPrice')->findOrFail($id);
 
+
         $product->title = $request->product_name;
         $product->sku = $request->product_sku;
         $product->description = $request->product_description;
+       
         $product->save();
+        
+
+        
 
         $variations = $request->variant;
         $product->productVariantPrice[0]->product_variant_one = $variations[0]['items'];
@@ -183,6 +219,8 @@ class ProductController extends Controller
         $product->productVariantPrice[0]->price = $request->price;
         $product->productVariantPrice[0]->stock = $request->stock;
         $product->productVariantPrice[0]->save();
+
+    
 
         return redirect()->back()->with('msg', 'Product Updated');
     }
