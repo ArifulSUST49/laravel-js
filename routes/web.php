@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,8 +20,6 @@ Route::get('/', function () {
     return redirect()->to('/login');
 });
 
-Auth::routes();
-
 Route::get('/home', 'HomeController@index')->name('home');
 Route::post('/dropzone', 'HomeController@index')->name('file-upload');
 
@@ -29,3 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('blog', 'BlogController');
     Route::resource('blog-category', 'BlogCategoryController');
 });
+
+// Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();

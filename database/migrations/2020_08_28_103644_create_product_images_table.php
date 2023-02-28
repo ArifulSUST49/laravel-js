@@ -20,7 +20,7 @@ class CreateProductImagesTable extends Migration
             $table->boolean('thumbnail')->nullable();
             $table->timestamps();
         });
-    }
+    } 
 
     /**
      * Reverse the migrations.
